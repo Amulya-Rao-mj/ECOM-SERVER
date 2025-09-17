@@ -1,28 +1,10 @@
+# Build stage
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+COPY . .
+RUN mvn clean package -DskipTests
 
-# -------- Build Stage --------
-FROM maven:3.9.9-eclipse-temurin-21 AS build
-WORKDIR /app
-
-# Copy only pom.xml first (to leverage Docker cache for dependencies)
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Now copy the rest of the project
-COPY src ./src
-
-# Package the app (skip tests for faster builds)
-RUN mvn clean 
-
-# -------- Runtime Stage --------
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-
-# Copy only the built jar from the build stage
-COPY --from=build /app/target/*.jar app.jar
-
-# Expose the default Spring Boot port
+# Runtime stage
+FROM eclipse-temurin:21-jdk-jammy
+COPY --from=build /target/ecom_server-0.0.1-SNAPSHOT.jar demo.jar
 EXPOSE 8080
-
-# Run the Spring Boot app
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
+ENTRYPOINT ["java","-jar","demo.jar"]
