@@ -5,6 +5,6 @@ RUN mvn clean package -DskipTests
 
 # Runtime stage
 FROM eclipse-temurin:21-jdk-jammy
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /target/ecom_server-0.0.1-SNAPSHOT.jar demo.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java","-jar","demo.jar"]
