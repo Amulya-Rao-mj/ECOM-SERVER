@@ -4,6 +4,7 @@ package com.example.ecom_server.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ecom_server.models.Product;
 import com.example.ecom_server.repos.ProductRepo;
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/products")
 public class ProductControllers {
@@ -43,19 +44,18 @@ public class ProductControllers {
     	}
     	
     }
-
-    public Product editProduct{@PathVariable String id, @RequestBody Product newproduct) {
+    @PutMapping("/product/edit/{id}")
+    public Product editProduct(@PathVariable String id, @RequestBody Product newproduct) {
         	Product findproduct =productRepo.findById(id).get();
         	findproduct.setName(newproduct.getName());
-        	findproduct.setName(newproduct.getDescription());
-        	findproduct.setName(newproduct.getCategory());
-        	findproduct.setName(newproduct.getTags());
-        	findproduct.setName(newproduct.getPrice());
-        	findproduct.setName(newproduct.getStock());
+        	findproduct.setDescription(newproduct.getDescription());
+        	findproduct.setCategory(newproduct.getCategory());
+        	findproduct.setTags(newproduct.getTags());
+        	findproduct.setPrice(newproduct.getPrice());
+        	findproduct.setStock(newproduct.getStock());
         	return productRepo.save(findproduct);
         	
         }
-    }
     	
     }
-}
+
