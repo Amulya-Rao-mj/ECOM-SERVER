@@ -44,7 +44,7 @@ public class ProductControllers {
     	
     }
 
-    public Product editProduct{@PathVariable String id, @RequestBody Product newproduct) {
+    public Product product{@PathVariable String id, @RequestBody Product newproduct) {
         	Product findproduct =productRepo.findById(id).get();
         	findproduct.setName(newproduct.getName());
         	findproduct.setName(newproduct.getDescription());
