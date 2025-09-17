@@ -1,26 +1,28 @@
-# -------- Stage 1: Build with Maven --------
-FROM maven:3.9.9-eclipse-temurin-17 AS build
+
+# -------- Build Stage --------
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy pom.xml and download dependencies first (better caching)
+# Copy only pom.xml first (to leverage Docker cache for dependencies)
 COPY pom.xml .
-RUN mvn dependency:go-offline
+RUN mvn dependency:go-offline -B
 
-# Copy source code and build the project
+# Now copy the rest of the project
 COPY src ./src
-RUN mvn clean package -Dmaven.test.skip=true
 
-# -------- Stage 2: Runtime --------
-FROM eclipse-temurin:17-jdk
+# Package the app (skip tests for faster builds)
+RUN mvn clean package -DskipTests
+
+# -------- Runtime Stage --------
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# Copy JAR from build stage
-COPY --from=build /app/target/ecom_server-0.0.1-SNAPSHOT.jar app.jar
+# Copy only the built jar from the build stage
+COPY --from=build /app/target/*.jar app.jar
 
-# Render injects PORT dynamically, so map it
-ENV PORT=8080
+# Expose the default Spring Boot port
 EXPOSE 8080
 
-# Start Spring Boot with Render's PORT
-ENTRYPOINT ["java", "-jar", "app.jar", "--server.port=${PORT}"]
+# Run the Spring Boot app
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
