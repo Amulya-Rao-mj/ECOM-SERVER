@@ -20,7 +20,7 @@ import com.example.ecom_server.repos.ProductRepo;
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/products")
-public class ProductController {
+public class ProductControllers {
 	@Autowired ProductRepo productRepo;
 	
 	@GetMapping("/all")
