@@ -1,10 +1,17 @@
-# Build stage
-FROM maven:3.9.6-eclipse-temurin-21 AS build
-COPY . .
-RUN mvn clean package -DskipTests
+# ---------- Build Stage ----------
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+WORKDIR /app
 
-# Runtime stage
-FROM eclipse-temurin:21-jdk-jammy
-COPY --from=build /target/ecom_server-0.0.1-SNAPSHOT.jar demo.jar
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+COPY src ./src
+RUN mvn clean 
+
+# ---------- Runtime Stage ----------
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","demo.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
